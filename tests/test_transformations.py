@@ -43,8 +43,10 @@ def test_date_standardization_expr(spark):
     data = [("10/01/2023"), ("2023-10-01"), ("Invalid Date")]
     df = spark.createDataFrame([(d,) for d in data], ["raw_date"])
     
-    # Use the same expression logic from bronze_to_silver.py
-    df = df.withColumn("std_date", F.expr("coalesce(to_date(raw_date, 'MM/dd/yyyy'), to_date(raw_date, 'yyyy-MM-dd'))"))
+    # Use try_to_date to handle invalid formats gracefully
+    df = df.withColumn("std_date", F.expr(
+        "coalesce(try_to_date(raw_date, 'MM/dd/yyyy'), try_to_date(raw_date, 'yyyy-MM-dd'))"
+    ))
     
     results = df.collect()
     assert str(results[0]["std_date"]) == "2023-10-01"

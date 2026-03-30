@@ -76,7 +76,7 @@ def process_claims(spark, input_path, output_base):
     # 1. Transformations
     split_col = F.split(F.col("period"), " - ")
     df = df.withColumn("end_date_raw", F.expr("try_element_at(split(period, ' - '), 2)"))
-    df = df.withColumn("standardized_date", F.expr("coalesce(to_date(end_date_raw, 'MM/dd/yyyy'), to_date(end_date_raw, 'yyyy-MM-dd'))"))
+    df = df.withColumn("standardized_date", F.expr("coalesce(try_to_date(end_date_raw, 'MM/dd/yyyy'), try_to_date(end_date_raw, 'yyyy-MM-dd'))"))
     
     num_cols = ["avg_spndg_per_ep_hospital", "avg_spndg_per_ep_state", "avg_spndg_per_ep_national"]
     # Rename these specifically for the schema
