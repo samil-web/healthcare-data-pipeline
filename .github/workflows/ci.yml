@@ -12,22 +12,43 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyspark delta-spark pytest pytest-spark dbt-duckdb duckdb pandas pyyaml
 
-      - name: Ingest/Transform Mock Data with Spark
+      - name: Setup Mock Data and Run Spark
         run: |
-          # Ensure directories exist
           mkdir -p data/bronze/claims/2026-03-29/
           mkdir -p data/bronze/patients/2026-03-29/
           mkdir -p data/bronze/trials/2026-03-29/
+          mkdir -p data/gold
           
-          # Use your existing Spark job to generate valid Silver Parquet files
-          # Note: We might need to provide a minimal CSV/JSON if they aren't in the repo
+          # Create minimal valid CSV for Spark to process
+          cat > data/bronze/claims/2026-03-29/hospital_claims_dataset.csv << 'EOF'
+Facility Name,Facility ID,State,Period,Claim Type,Avg Spndg Per EP Hospital,Avg Spndg Per EP State,Avg Spndg Per EP National,Percent of Spndg Hospital,Percent of Spndg State,Percent of Spndg National,Start Date,End Date
+Hospital A,1,AL,10/01/2023 - 09/30/2024,IP,100,200,300,10%,20%,30%,01/01/2024,12/31/2024
+EOF
+
+          # Create minimal trials JSON
+          cat > data/bronze/trials/2026-03-29/diabetes_clinical_trials.json << 'EOF'
+{"studies": [{"protocolSection": {"identificationModule": {"nctId": "NCT1"}, "statusModule": {"startDateStruct": {"date": "2024-01-01"}}}}]}
+EOF
+          
+          # Create minimal FHIR patient JSON 
+          cat > data/bronze/patients/2026-03-29/synthea_sample_patient.json << 'EOF'
+{"resourceType": "Bundle", "entry": [{"resource": {"resourceType": "Patient", "id": "P1", "birthDate": "1990-01-01", "gender": "male", "name": [{"family": "Smith", "given": ["John"]}]}}]}
+EOF
+          
+          # Run the actual Spark transformation to generate VALID Parquet files
           python spark_jobs/bronze_to_silver.py
-          
+          python spark_jobs/unified_view.py
+
       - name: Run PySpark Unit Tests
         run: |
           pytest tests/test_transformations.py tests/test_pipeline.py
