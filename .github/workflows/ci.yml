@@ -12,15 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create Mock Data for dbt
+      - name: Ingest/Transform Mock Data with Spark
         run: |
-          mkdir -p data/silver/patients/year=2024/month=1
-          mkdir -p data/silver/hospital_claims/year=2024/month=1
-          mkdir -p data/silver/clinical_trials/
-          mkdir -p data/gold
-          touch data/silver/patients/year=2024/month=1/dummy.parquet
-          touch data/silver/hospital_claims/year=2024/month=1/dummy.parquet
-          touch data/silver/clinical_trials/dummy.parquet
+          # Ensure directories exist
+          mkdir -p data/bronze/claims/2026-03-29/
+          mkdir -p data/bronze/patients/2026-03-29/
+          mkdir -p data/bronze/trials/2026-03-29/
+          
+          # Use your existing Spark job to generate valid Silver Parquet files
+          # Note: We might need to provide a minimal CSV/JSON if they aren't in the repo
+          python spark_jobs/bronze_to_silver.py
+          
 
       - name: Install dependencies
         run: |
@@ -34,6 +36,5 @@ jobs:
       - name: Run dbt Tests
         run: |
           cd dbt_healthcare
-          dbt debug --profiles-dir .
           dbt run --profiles-dir .
           dbt test --profiles-dir .
