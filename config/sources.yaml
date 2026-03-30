@@ -1,0 +1,18 @@
+sources:
+  - name: hospital_claims
+    format: csv
+    path: data/bronze/claims/{{ ds }}/hospital_claims_dataset.csv
+    schema_check: true
+    partition_by: Period
+
+  - name: patient_records
+    format: fhir_json
+    path: data/bronze/patients/{{ ds }}/synthea_sample_patient.json
+    schema_check: true
+    partition_by: resourceType
+
+  - name: clinical_trials
+    format: json
+    path: data/bronze/trials/{{ ds }}/diabetes_clinical_trials.json
+    schema_check: true
+    partition_by: status
