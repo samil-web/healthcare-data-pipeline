@@ -12,10 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+      - name: Create Mock Data for dbt
+        run: |
+          mkdir -p data/silver/patients/year=2024/month=1
+          mkdir -p data/silver/hospital_claims/year=2024/month=1
+          mkdir -p data/silver/clinical_trials/
+          mkdir -p data/gold
+          touch data/silver/patients/year=2024/month=1/dummy.parquet
+          touch data/silver/hospital_claims/year=2024/month=1/dummy.parquet
+          touch data/silver/clinical_trials/dummy.parquet
 
       - name: Install dependencies
         run: |

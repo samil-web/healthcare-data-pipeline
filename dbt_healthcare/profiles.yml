@@ -3,7 +3,7 @@ dbt_healthcare:
   outputs:
     dev:
       type: duckdb
-      path: '/Users/apple/Documents/Dataflow/healthcare_project/data/gold/healthcare.duckdb'
+      path: '../data/gold/healthcare.duckdb'
       extensions:
         - parquet
         - icu
