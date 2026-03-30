@@ -1,0 +1,6 @@
+pyspark
+apache-airflow
+dbt-core
+pytest
+pandas
+great-expectations

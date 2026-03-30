@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+ENV/
+env/
+
+# Airflow
+logs/
+airflow.db
+webserver_config.py
+unittests.cfg
+*.log
+
+# Data (Ignore raw data and database files)
+data/
+*.zip
+*.csv
+*.json
+*.parquet
+*.db
+temp_synthea/
+
+# Docker
+.docker/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
