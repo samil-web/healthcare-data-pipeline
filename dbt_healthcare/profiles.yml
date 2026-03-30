@@ -1,0 +1,11 @@
+dbt_healthcare:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '/Users/apple/Documents/Dataflow/healthcare_project/data/gold/healthcare.duckdb'
+      extensions:
+        - parquet
+        - icu
+      settings:
+        preserve_insertion_order: false
